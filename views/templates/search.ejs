@@ -1,0 +1,149 @@
+<%- include("../partials/header.ejs") %>
+<script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "<%= baseURL %><%= linkPrefix %>"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Search",
+            "item": "<%= baseURL %><%= linkPrefix %>/search"
+        }
+    ]
+}
+</script>
+
+<link href="/css/theme/<%= preferredTheme %>/search.css" media="screen, print" rel="stylesheet" />
+<style>.is-checkradio[type="checkbox"].is-default.has-background-color+label::before,.is-checkradio[type="checkbox"].is-default.has-background-color+label:before{border-color:transparent !important;background-color:<%= defaultColour %> !important}.is-checkradio[type="checkbox"].is-default:hover:not([disabled])+label::before,.is-checkradio[type="checkbox"].is-default:hover:not([disabled])+label:before{border-color:<%= defaultColour %> !important}.is-checkradio[type="checkbox"].is-default:checked+label::after,.is-checkradio[type="checkbox"].is-default:checked+label:after{border-color:<%= defaultColour %> !important}.is-checkradio[type="checkbox"].is-default:checked.has-background-color+label::before,.is-checkradio[type="checkbox"].is-default:checked.has-background-color+label:before{border-color:transparent !important;background-color:<%= defaultColour %> !important}.is-checkradio[type="checkbox"].is-default:checked.has-background-color+label::after,.is-checkradio[type="checkbox"].is-default:checked.has-background-color+label:after{border-color:<%= foreground %> !important;background-color:<%= defaultColour %> !important}.is-checkradio[type="checkbox"].is-default.is-block:hover:not([disabled])+label::after,.is-checkradio[type="checkbox"].is-default.is-block:hover:not([disabled])+label:after,.is-checkradio[type="checkbox"].is-default.is-block:hover:not([disabled])+label::before,.is-checkradio[type="checkbox"].is-default.is-block:hover:not([disabled])+label:before{border-color:<%= defaultColour %> !important}.is-checkradio[type="checkbox"].is-default.is-block:checked+label{color:<%= foreground %>;border-color:<%= defaultColour %> !important;background:<%= defaultColour %>}.is-checkradio[type="checkbox"].is-default.is-block:checked+label::after,.is-checkradio[type="checkbox"].is-default.is-block:checked+label:after{border-color:<%= foreground %> !important}.is-checkradio[type="checkbox"].is-default.is-block:checked:hover:not([disabled])+label{background:#5e78d5}.is-checkradio[type="checkbox"].is-default.is-block:checked:hover:not([disabled])+label::after,.is-checkradio[type="checkbox"].is-default.is-block:checked:hover:not([disabled])+label:after,.is-checkradio[type="checkbox"].is-default.is-block:checked:hover:not([disabled])+label::before,.is-checkradio[type="checkbox"].is-default.is-block:checked:hover:not([disabled])+label:before{border-color:#f2f2f2 !important}</style><%- include("../partials/nav.ejs") %>
+<%- include("../partials/isDefaultCSS/button.ejs") %>
+<section class="hero is-primary">
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <br />
+            <h1 class="title">
+                <span class="icon is-medium iconalign">
+                    <i aria-hidden="true" class="fad fa-search has-text-default fa-1x"></i>
+                </span>
+                <br />
+                <span><%= title %></span>
+            </h1>
+            <h2 class="subtitle"><%= subtitle %></h2>
+            <br />
+            <p class="control has-icons-left has-icons-right">
+                <input class="input is-rounded is-dark" id="searchInput" placeholder="<%= __("page.search.input") %>" type="text">
+                <span class="icon is-small is-left">
+                    <i class="fas fa-search"></i>
+                </span>
+            </p>
+            <br />
+            <div>
+                <% if (req.user && req.user.db.rank.mod) { %>
+                    <input class="is-checkradio is-circle has-background-color is-default" type="checkbox" id="users" name="users">
+                    <label class="has-text-default" for="users"><%= __("common.users") %></label>
+                <% } %>
+                <input class="is-checkradio is-circle has-background-color is-default" type="checkbox" id="bots" name="bots" checked="checked">
+                <label class="has-text-default" for="bots"><%= __("common.bots") %></label>
+                <input class="is-checkradio is-circle has-background-color is-default" type="checkbox" id="servers" name="servers" checked="checked">
+                <label class="has-text-default" for="servers"><%= __("common.servers") %></label>
+                <input class="is-checkradio is-circle has-background-color is-default" type="checkbox" id="templates" name="templates" checked="checked">
+                <label class="has-text-default" for="templates"><%= __("common.templates") %></label>
+            </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="container is-fluid">
+    <div class="section is-fluid" id="display">
+        <div>
+            <h2 class="is-size-3" id="noticeMsg" style="display: block;"><%= __("page.search.initial") %></h2>
+            <button class="button is-transparent is-large is-fullwidth is-loading" style="display: none;" id="loader"><%= __("common.loading") %></button>
+            <div class="columns is-multiline is-centered" id="renderingDiv"></div>
+        </div>
+    </div>
+</div>
+<script>
+    const input = document.getElementById("searchInput");
+
+    <% if (search !== "") { %>
+        document.addEventListener("DOMContentLoaded", async () => {
+            input.value = "<%= search %>";
+            await doSearch();    
+        });
+    <% } %>
+
+    input.addEventListener("keyup", async (event) => {
+        if (event.keyCode === 13) {
+            await doSearch();
+        } else return;
+    });
+
+    async function doSearch() {
+        const noticeMsg = document.getElementById("noticeMsg");
+        const loader = document.getElementById("loader");
+
+        document.getElementById("renderingDiv").innerHTML = "";
+        loader.style.display = "block";
+        noticeMsg.style.display = "none";
+
+        const input = document.querySelector("input.input.is-rounded.is-dark#searchInput");
+
+        if (input.value.match(/gay(\s+)?(men\s+)?.*/i)) return window.location.href = "/users/302604426781261824";
+        if (input.value.toLowerCase() === "developers developers developers developers") return document.body.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/KMU0tzLwhbE?controls=0&autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        
+        const c = document.querySelector("input[type='checkbox']#users");
+        const a = document.querySelector("input[type='checkbox']#bots");
+        const b = document.querySelector("input[type='checkbox']#servers");
+        const d = document.querySelector("input[type='checkbox']#templates");
+
+        const only = [];
+        a && a.checked ? only.push("bots") : false;
+        b && b.checked ? only.push("servers") : false;
+        c && c.checked ? only.push("users") : false;
+        d && d.checked ? only.push("templates") : false;
+
+        async function fetchPOST(url = '', data = {}) {
+            const response = await fetch(url, {
+                method: "POST",
+                mode: "cors", 
+                cache: "no-cache", 
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                redirect: "follow",
+                referrerPolicy: "no-referrer",
+                body: JSON.stringify(data)
+            });
+
+            return response.json();
+        }
+        
+        fetchPOST("<%= linkPrefix %>/search", {
+            query: input.value,
+            only: only || ["bots", "servers", "templates"]
+        })
+        .then(data => {
+            let content = "";
+
+            if (data.data.pages.length !== 0) {
+                for (const card of data.data.pages[0]) {
+                    content = content + card;
+                }
+            } else {
+                noticeMsg.innerHTML = "<h2 class=\"is-size-3\" id=\"noticeMsg\"><%= __("common.error.fetchFail.search.noResults") %></h2>"; 
+                noticeMsg.style.display = "block";
+            }
+            
+            loader.style.display = "none";
+            document.getElementById("renderingDiv").innerHTML = content;
+        });
+    }
+</script>
+<%- include("../partials/footer.ejs") %>

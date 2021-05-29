@@ -1,0 +1,112 @@
+<%- include("../partials/header.ejs") %>
+<%- include("../partials/nav.ejs") %>
+<script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "<%= baseURL %><%= linkPrefix %>"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "About",
+                "item": "<%= baseURL %><%= linkPrefix %>/about"
+            }
+        ]
+    }
+</script>
+<style>
+    .has-background-contrib-admin {
+        background: linear-gradient(-35deg, rgba(205, 9, 48, 0.5) 20%, rgb(205, 9, 48) 130%); 
+        box-shadow: transparent 0px 2px 52px 0px;
+    }
+    .has-background-contrib-admin:hover {
+        box-shadow: rgba(205, 9, 48, 0.3) 0px 2px 52px 0px;
+    }
+    .has-background-contrib-assistant {
+        background: linear-gradient(-35deg, rgba(242, 68, 5, 0.5) 20%, rgb(242, 68, 5) 130%);
+        box-shadow: transparent 0px 2px 52px 0px;
+    }
+    .has-background-contrib-assistant:hover {
+        box-shadow: rgba(242, 68, 5, 0.30196078431372547) 0px 2px 52px 0px;
+    }
+    .has-background-contrib-mod {
+        background: linear-gradient(-35deg, rgba(13, 191, 4, 0.5) 20%, rgb(13, 191, 4) 130%); 
+        box-shadow: transparent 0px 2px 52px 0px;
+    }
+    .has-background-contrib-mod:hover {
+        box-shadow: rgba(13, 191, 4, 0.3) 0px 2px 52px 0px;
+    }
+    .has-background-contrib-booster {
+        background: linear-gradient(-35deg, rgba(205, 82, 255, 0.5) 20%, rgb(205, 82, 255) 130%); 
+        box-shadow: transparent 0px 2px 52px 0px;
+    }
+    .has-background-contrib-booster:hover {
+        box-shadow: rgba(205, 82, 255, 0.3) 0px 2px 52px 0px;
+    }
+    .has-background-contrib-donator {
+        background: linear-gradient(-35deg, rgba(205, 82, 255, 0.5) 20%, rgb(205, 82, 255) 130%); 
+        box-shadow: transparent 0px 2px 52px 0px;
+    }
+    .has-background-contrib-donator:hover {
+        box-shadow: rgba(205, 82, 255, 0.3) 0px 2px 52px 0px;
+    }
+    .has-background-contrib-tester {
+        background: linear-gradient(-35deg, rgba(48, 150, 255, 0.5) 20%, rgb(48, 150, 255) 130%); 
+        box-shadow: transparent 0px 2px 52px 0px;
+    }
+    .has-background-contrib-tester:hover {
+        box-shadow: rgba(48, 150, 255, 0.3) 0px 2px 52px 0px;
+    }
+    .has-background-contrib-translator {
+        background: linear-gradient(-35deg, rgba(21, 196, 255, 0.5) 20%, rgb(21, 196, 255) 130%); 
+        box-shadow: transparent 0px 2px 52px 0px;
+    }
+    .has-background-contrib-translator:hover {
+        box-shadow: rgba(21, 196, 255, 0.3) 0px 2px 52px 0px;
+    }
+</style>
+<section class="hero is-black">
+    <div class="hero-body">
+        <br />
+        <div class="container has-text-centered">
+            <h1 class="title">
+                <span class="icon is-medium iconalign">
+                    <i aria-hidden="true" class="fad fa-info-circle has-text-default fa-1x"></i>
+                </span>
+                <br />
+                <span><%= title %></span>
+            </h1>
+            <h2 class="subtitle"><%= subtitle %></h2>
+        </div>
+    </div>
+    </section>
+    <div class="container">
+        <div class="section">
+            <h3 class="is-size-3"><%= __("page.about.history") %></h3>
+            <p>
+                <%= __("page.about.backstory") %>
+            </p>
+        </div>
+        <div class="section">
+            <h3 class="is-size-3"><%= __("page.about.staff") %></h3>
+            <div class="columns is-multiline">
+                <%- staff.map(user => include("../partials/cards/aboutUserCard.ejs", { user })).join("") %>
+            </div>
+            <br />
+            <h3 class="is-size-3"><%= __("page.about.donators") %></h3>
+            <div class="columns is-multiline">
+                <%- donators.map(user => include("../partials/cards/aboutUserCard.ejs", { user })).join("") %>
+            </div>
+            <h3 class="is-size-3"><%= __("page.about.contributors") %></h3>
+            <div class="columns is-multiline">
+                <%- contributors.map(user => include("../partials/cards/aboutUserCard.ejs", { user })).join("") %>
+            </div>
+        </div>
+    </div>
+<%- include("../partials/footer.ejs") %>

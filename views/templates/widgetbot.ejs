@@ -1,0 +1,68 @@
+<%- include("../partials/header.ejs") %>
+<%- include("../partials/nav.ejs") %>
+<script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "<%= baseURL %><%= linkPrefix %>"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "DEL Discord Server",
+                "item": "<%= baseURL %><%= linkPrefix %>/widgetbot"
+            }
+        ]
+    }
+</script>
+
+<%- include("../partials/isDefaultCSS/button.ejs") %>
+<section class="hero is-black">
+    <div class="hero-body">
+        <br />
+        <div class="container has-text-centered">
+            <h1 class="title">
+                <span class="icon is-medium iconalign">
+                    <i aria-hidden="true" class="fab fa-discord has-text-default fa-1x"></i>
+                </span>
+                <br />
+                <span><%= title %></span>
+            </h1>
+            <h2 class="subtitle"><%= subtitle %></h2>
+            <div class="buttons page is-centered">
+                <%- 
+                    include("../partials/button.ejs", { 
+                        className: "button is-default", 
+                        icon: "fas fa-user-plus", 
+                        tag: "a", 
+                        message: __("common.discord.direct"), 
+                        href: discordServer, 
+                        additional: "target=\"_blank\" rel=\"noopener\""
+                    });
+                %>
+                <%- 
+                    include("../partials/button.ejs", { 
+                        className: "button is-default", 
+                        icon: "fas fa-info-circle", 
+                        tag: "a", 
+                        message: __("common.widgetbot.del"), 
+                        href: `${linkPrefix}/bots/543225764036870167`, 
+                        additional: "target=\"_blank\" rel=\"noopener\""
+                    });
+                %>
+            </div>
+        </div>
+    </div>
+    </section>
+    <div class="container">
+        <div class="section">
+            <widgetbot server="<%= settings.guild.main %>" channel="<%= settings.channels.default %>" width="100%" height="600" shard="<%= settings.widgetbotv3 %>"></widgetbot>
+            <script src="https://cdn.jsdelivr.net/npm/@widgetbot/html-embed"></script>
+        </div>
+    </div>
+<%- include("../partials/footer.ejs") %>
